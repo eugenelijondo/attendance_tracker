@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from lib.models import Teacher, Student
+from models import Teacher, Student
 from random import randint
 from datetime import datetime
 from faker import Faker
