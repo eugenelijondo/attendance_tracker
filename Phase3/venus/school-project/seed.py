@@ -2,9 +2,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from lib.models import Teacher, Student
 from random import randint
-import random
 from datetime import datetime
 from faker import Faker
+import random
 from helpers import associate_student_with_teacher, dissociate_student_from_teacher, mark_student_attendance, mark_teacher_attendance
 
 fake = Faker()
@@ -18,8 +18,20 @@ db_session = Session()
 
 def populate():
     # Create users (students and teachers)
-    teachers = [Teacher(username="teacher_" + str(i+1), name=fake.name(), email=fake.email(), password=fake.password()) for i in range(7)]
-    students = [Student(username="student_" + str(i+1), name=fake.name(), password=fake.password()) for i in range(115)]
+    teachers = []
+    students = []
+
+    # Generate passwords for teachers
+    for i in range(7):
+        password = None
+        while password is None:
+            password = fake.password()
+        teachers.append(Teacher(username="teacher_" + str(i+1), name=fake.name(), email=fake.email(), password=password, role='teacher'))
+
+    # Generate students
+    for i in range(115):
+        students.append(Student(username="student_" + str(i+1), name=fake.name(), roll_number=randint(5000, 10000), role='student'))
+
     all_users = students + teachers
     
     # Add users to the session and commit changes
@@ -32,6 +44,7 @@ def populate():
         associate_student_with_teacher(student, teacher)
         
     print("Database populated with %s students and %s teachers." % (len(students), len(teachers)))
+    db_session.commit()
     
     # Dissociate teachers from students
     for student in students:
@@ -49,6 +62,7 @@ def populate():
             mark_teacher_attendance(user.id, random_date, attendance_status)
         else:
             mark_student_attendance(user.id, random_date, attendance_status)
+    db_session.commit()
 
 # Main code execution
 if __name__ == "__main__":

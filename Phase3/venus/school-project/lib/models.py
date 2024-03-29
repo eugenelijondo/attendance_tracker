@@ -74,4 +74,3 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     db_session = Session()
     
-    # Add initial data or perform other operations as needed
